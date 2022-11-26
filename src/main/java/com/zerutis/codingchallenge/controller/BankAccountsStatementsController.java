@@ -1,5 +1,6 @@
 package com.zerutis.codingchallenge.controller;
 
+import com.zerutis.codingchallenge.service.BankAccountsStatementsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,6 +8,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/v1/bank-accounts-statements")
 public class BankAccountsStatementsController {
+
+    final BankAccountsStatementsService service;
+
+    public BankAccountsStatementsController(BankAccountsStatementsService service) {
+        this.service = service;
+    }
 
     @GetMapping("/csv")
     public ResponseEntity<Object> downloadBankAccountsStatements(
