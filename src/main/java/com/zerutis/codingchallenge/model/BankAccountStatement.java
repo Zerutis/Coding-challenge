@@ -3,11 +3,13 @@ package com.zerutis.codingchallenge.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "bank_account_statement")
 public class BankAccountStatement {
 
     @Id
@@ -28,6 +30,17 @@ public class BankAccountStatement {
 
     @Column(name = "currency")
     private String currency;
+
+    public BankAccountStatement(String accountNumber, LocalDateTime operationDateTime, String beneficiary, String comment, BigDecimal amount, String currency) {
+        this.accountNumber = accountNumber;
+        this.operationDateTime = operationDateTime;
+        this.beneficiary = beneficiary;
+        this.comment = comment;
+        this.amount = amount;
+        this.currency = currency;
+    }
+
+    public BankAccountStatement() {}
 
     public String getAccountNumber() {
         return accountNumber;
