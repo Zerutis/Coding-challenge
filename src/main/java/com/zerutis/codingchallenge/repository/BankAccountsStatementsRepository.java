@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -15,4 +16,11 @@ public interface BankAccountsStatementsRepository extends JpaRepository<BankAcco
             nativeQuery = true
     )
     List<BankAccountStatement> findByOperationDate(String from, String to);
+
+
+    @Query(
+            value = "SELECT amount FROM bank_account_statement WHERE account_number = ?1",
+            nativeQuery = true
+    )
+    List<BigDecimal> findAllByAccountNumber(String accountNumber);
 }

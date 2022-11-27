@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BankAccountsStatementsService {
@@ -41,5 +43,25 @@ public class BankAccountsStatementsService {
 
         ByteArrayInputStream byteArrayInputStream = csvHelper.bankAccountStatementToCSV(bankAccountStatementList);
         return byteArrayInputStream;
+    }
+
+    public BigDecimal queryAmountsOf(String accountNumber) {
+        List<BigDecimal> bankAccountStatementList = repository.findAllByAccountNumber(accountNumber);
+
+        BigDecimal balance = bankAccountStatementList
+                .stream()
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return balance;
+    }
+
+    private BigDecimal calculateBalance(List<BankAccountStatement> statements) {
+        BigDecimal balance = BigDecimal.ZERO;
+        statements.forEach((statement) -> {
+            balance.add(statement.getAmount());
+        });
+
+        return balance;
     }
 }

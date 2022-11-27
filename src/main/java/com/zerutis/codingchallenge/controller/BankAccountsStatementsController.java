@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/v1/bank-accounts-statements")
 public class BankAccountsStatementsController {
@@ -58,11 +60,15 @@ public class BankAccountsStatementsController {
     }
 
     @PostMapping("/account/{accountNumber}/balance")
-    public ResponseEntity<String> queryBalance(
+    public ResponseEntity<BigDecimal> queryBalance(
             @PathVariable String accountNumber,
             @RequestParam(value = "from", required = false) String from,
             @RequestParam(value = "to", required = false) String to
     ) {
-        return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
+        BigDecimal balance = service.queryAmountsOf(accountNumber);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(balance);
     }
 }
