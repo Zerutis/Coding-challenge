@@ -1,6 +1,5 @@
 package com.zerutis.codingchallenge.model;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -103,7 +102,6 @@ public class BankAccountStatement {
     @Override
     public String toString() {
         return "BankAccountStatement{" +
-                "id=" + id +
                 ", accountNumber='" + accountNumber + '\'' +
                 ", operationDateTime=" + operationDateTime +
                 ", beneficiary='" + beneficiary + '\'' +
