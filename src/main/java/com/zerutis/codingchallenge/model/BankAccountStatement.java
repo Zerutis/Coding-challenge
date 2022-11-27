@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 public class BankAccountStatement {
 
     @Id
+    @Column(name = "id")
+    private Long id;
+
     @Column(name = "account_number")
     private String accountNumber;
 
@@ -31,7 +34,8 @@ public class BankAccountStatement {
     @Column(name = "currency")
     private String currency;
 
-    public BankAccountStatement(String accountNumber, LocalDateTime operationDateTime, String beneficiary, String comment, BigDecimal amount, String currency) {
+    public BankAccountStatement(Long id, String accountNumber, LocalDateTime operationDateTime, String beneficiary, String comment, BigDecimal amount, String currency) {
+        this.id = id;
         this.accountNumber = accountNumber;
         this.operationDateTime = operationDateTime;
         this.beneficiary = beneficiary;
@@ -41,6 +45,14 @@ public class BankAccountStatement {
     }
 
     public BankAccountStatement() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getAccountNumber() {
         return accountNumber;
