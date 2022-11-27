@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import static org.mockito.Mockito.*;
 
@@ -98,7 +99,7 @@ public class BankAccountsStatementsControllerTest {
 
         @Test
         @DisplayName("return httpStatus.OK")
-        void returnCsvFile() {
+        void returnHttpStatusOK() {
             when(service.loadBankAccountsStatements()).thenReturn(byteArrayInputStream);
 
             ResponseEntity expected = ResponseEntity
@@ -113,7 +114,7 @@ public class BankAccountsStatementsControllerTest {
 
         @Test
         @DisplayName("return httpStatus.OK when given dates")
-        void returnCsvFileWhenGivenDates() {
+        void returnHttpStatusOKWhenGivenDates() {
             when(service.loadBankAccountsStatements(dateFrom, dateTo)).thenReturn(byteArrayInputStream);
 
             ResponseEntity expected = ResponseEntity
@@ -131,11 +132,33 @@ public class BankAccountsStatementsControllerTest {
     @DisplayName("queryBalance should")
     class AccountBalance {
 
+        final String accountNumber = "10000";
+        final String dateFrom = "2020-02-02";
+        final String dateTo = "2023-02-02";
+        final BigDecimal balance = new BigDecimal(10);
+
         @Test
-        @DisplayName("be not implemented")
-        void shouldBeNotImplemented() {
-            ResponseEntity expected = new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
-            ResponseEntity actual = controller.queryBalance("", "", "");
+        @DisplayName("return HttpStatus.OK with balance as 10")
+        void returnHttpStatusOkWithBalance() {
+            when(service.calculateBalanceOf(accountNumber)).thenReturn(balance);
+
+            ResponseEntity expected = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(balance);
+            ResponseEntity actual = controller.calculateBalance(accountNumber, null, null);
+
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        @DisplayName("return HttpStatus.OK with balance as 10 when given dates")
+        void returnHttpStatusOkWithBalanceWhenGivenDates() {
+            when(service.calculateBalanceOf(accountNumber, dateFrom, dateTo)).thenReturn(balance);
+
+            ResponseEntity expected = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(balance);
+            ResponseEntity actual = controller.calculateBalance(accountNumber, dateFrom, dateTo);
 
             Assertions.assertEquals(expected, actual);
         }

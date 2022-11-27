@@ -60,7 +60,7 @@ public class BankAccountsStatementsController {
     }
 
     @GetMapping("/account/{accountNumber}/balance")
-    public ResponseEntity<BigDecimal> queryBalance(
+    public ResponseEntity<BigDecimal> calculateBalance(
             @PathVariable String accountNumber,
             @RequestParam(value = "from", required = false) String from,
             @RequestParam(value = "to", required = false) String to
@@ -68,10 +68,10 @@ public class BankAccountsStatementsController {
         BigDecimal balance;
 
         if(from != null && to != null) {
-            balance = service.queryAmountOf(accountNumber, from, to);
+            balance = service.calculateBalanceOf(accountNumber, from, to);
         }
         else {
-            balance = service.queryAmountOf(accountNumber);
+            balance = service.calculateBalanceOf(accountNumber);
         }
         return ResponseEntity
                 .status(HttpStatus.OK)

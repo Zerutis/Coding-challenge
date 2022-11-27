@@ -43,13 +43,13 @@ public class BankAccountsStatementsService {
         return byteArrayInputStream;
     }
 
-    public BigDecimal queryAmountOf(String accountNumber) {
+    public BigDecimal calculateBalanceOf(String accountNumber) {
         List<BigDecimal> amountList = repository.findAllByAccountNumber(accountNumber);
 
         return calculateBalance(amountList);
     }
 
-    public BigDecimal queryAmountOf(String accountNumber, String from, String to) {
+    public BigDecimal calculateBalanceOf(String accountNumber, String from, String to) {
         List<BigDecimal> amountList = repository.findByAccountNumberAndDate(accountNumber, from, to);
 
         return calculateBalance(amountList);

@@ -134,8 +134,8 @@ public class BankAccountsStatementsServiceTest {
     }
 
     @Nested
-    @DisplayName("queryAmountOf should")
-    class queryAmountOf {
+    @DisplayName("calculateBalanceOf should")
+    class calculateBalanceOf {
 
         final String dateFrom = "2020-02-02";
         final String dateTo = "2023-02-02";
@@ -143,7 +143,7 @@ public class BankAccountsStatementsServiceTest {
         @Test
         @DisplayName("call repository.findAllByAccountNumber")
         void callFindAllByAccountNumber() {
-            service.queryAmountOf(accountNumber);
+            service.calculateBalanceOf(accountNumber);
 
             verify(repository, times(1)).findAllByAccountNumber(accountNumber);
         }
@@ -154,7 +154,7 @@ public class BankAccountsStatementsServiceTest {
             final List<BigDecimal> amountList = new ArrayList<>(){{add(amount);}};
             when(repository.findAllByAccountNumber(accountNumber)).thenReturn(amountList);
 
-            final BigDecimal actual = service.queryAmountOf(accountNumber);
+            final BigDecimal actual = service.calculateBalanceOf(accountNumber);
 
             Assertions.assertEquals(amount, actual);
         }
@@ -162,7 +162,7 @@ public class BankAccountsStatementsServiceTest {
         @Test
         @DisplayName("call repository.findAllByAccountNumberAndDate with given dates")
         void callFindAllByAccountNumberAndDate() {
-            service.queryAmountOf(accountNumber, dateFrom, dateTo);
+            service.calculateBalanceOf(accountNumber, dateFrom, dateTo);
 
             verify(repository, times(1)).findByAccountNumberAndDate(accountNumber, dateFrom, dateTo);
         }
@@ -173,7 +173,7 @@ public class BankAccountsStatementsServiceTest {
             final List<BigDecimal> amountList = new ArrayList<>(){{add(amount);}};
             when(repository.findByAccountNumberAndDate(accountNumber, dateFrom, dateTo)).thenReturn(amountList);
 
-            final BigDecimal actual = service.queryAmountOf(accountNumber, dateFrom, dateTo);
+            final BigDecimal actual = service.calculateBalanceOf(accountNumber, dateFrom, dateTo);
 
             Assertions.assertEquals(amount, actual);
         }
