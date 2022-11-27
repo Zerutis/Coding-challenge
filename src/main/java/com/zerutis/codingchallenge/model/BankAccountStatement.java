@@ -1,5 +1,6 @@
 package com.zerutis.codingchallenge.model;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -14,22 +15,22 @@ public class BankAccountStatement {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "account_number")
+    @Column(name = "account_number", nullable = false)
     private String accountNumber;
 
-    @Column(name = "operation_datetime")
+    @Column(name = "operation_datetime", nullable = false)
     private LocalDateTime operationDateTime;
 
-    @Column(name = "beneficiary")
+    @Column(name = "beneficiary", nullable = false)
     private String beneficiary;
 
     @Column(name = "comment")
     private String comment;
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
-    @Column(name = "currency")
+    @Column(name = "currency", nullable = false)
     private String currency;
 
     public BankAccountStatement(String accountNumber, LocalDateTime operationDateTime, String beneficiary, String comment, BigDecimal amount, String currency) {
