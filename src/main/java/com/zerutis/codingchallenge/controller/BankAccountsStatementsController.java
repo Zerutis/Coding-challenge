@@ -26,8 +26,15 @@ public class BankAccountsStatementsController {
             @RequestParam(value = "to", required = false) String to
     ) {
         String filename = "bank-accounts-statements.csv";
-        InputStreamResource file = new InputStreamResource(service.loadBankAccountsStatements());
+        InputStreamResource file;
 
+        if(from != null && to != null) {
+            file = new InputStreamResource(service.loadBankAccountsStatements(from, to));
+        }
+        else {
+            file = new InputStreamResource(service.loadBankAccountsStatements());
+
+        }
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)

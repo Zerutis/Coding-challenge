@@ -29,8 +29,15 @@ public class BankAccountsStatementsService {
         repository.saveAll(statements);
     }
 
-    public ByteArrayInputStream loadBankAccountsStatements(){
+    public ByteArrayInputStream loadBankAccountsStatements() {
         List<BankAccountStatement> bankAccountStatementList = repository.findAll();
+
+        ByteArrayInputStream byteArrayInputStream = csvHelper.bankAccountStatementToCSV(bankAccountStatementList);
+        return byteArrayInputStream;
+    }
+
+    public ByteArrayInputStream loadBankAccountsStatements(String from, String to) {
+        List<BankAccountStatement> bankAccountStatementList = repository.findByOperationDate(from, to);
 
         ByteArrayInputStream byteArrayInputStream = csvHelper.bankAccountStatementToCSV(bankAccountStatementList);
         return byteArrayInputStream;
