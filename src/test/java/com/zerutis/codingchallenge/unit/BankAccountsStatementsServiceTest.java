@@ -1,6 +1,7 @@
 package com.zerutis.codingchallenge.unit;
 
 import com.zerutis.codingchallenge.helper.CSVHelper;
+import com.zerutis.codingchallenge.model.BankAccountStatement;
 import com.zerutis.codingchallenge.repository.BankAccountsStatementsRepository;
 import com.zerutis.codingchallenge.service.BankAccountsStatementsService;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -32,11 +37,22 @@ public class BankAccountsStatementsServiceTest {
     @MockBean
     CSVHelper csvHelper;
 
+    final BankAccountStatement statement = new BankAccountStatement(
+            "10000",
+            LocalDateTime.now(),
+            "Inventi",
+            "",
+            new BigDecimal(10),
+            "USD"
+    );
+    final List<BankAccountStatement> statements = new ArrayList(){{add(statement);}};
+
     @Nested
     @DisplayName("saveBankAccountsStatements should")
     class SaveBankAccountsStatements {
 
         final MultipartFile mockFile = mock(MultipartFile.class);
+
 
         @Test
         @DisplayName("call csvHelper.csvToBankAccountStatement")
@@ -48,10 +64,12 @@ public class BankAccountsStatementsServiceTest {
 
         @Test
         @DisplayName("call repository.saveAll")
-        void callSaveAll() throws IOException {
+        void callSaveAllWithStatements() throws IOException {
+            when(csvHelper.csvToBankAccountStatement(any())).thenReturn(statements);
+
             service.saveBankAccountsStatements(mockFile);
 
-            verify(repository, times(1)).saveAll(any());
+            verify(repository, times(1)).saveAll(statements);
         }
 
         @Test
@@ -64,6 +82,50 @@ public class BankAccountsStatementsServiceTest {
             } catch (Exception ignored) {}
 
             verify(repository, never()).saveAll(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("loadBankAccountsStatements should")
+    class loadBankAccountsStatements {
+
+        String dateFrom = "2020-02-02";
+        String dateTo = "2023-02-02";
+
+        @Test
+        @DisplayName("call repository.findAll")
+        void callFindAll() {
+            service.loadBankAccountsStatements();
+
+            verify(repository, times(1)).findAll();
+        }
+
+        @Test
+        @DisplayName("call csvHelper.bankAccountStatementToCSV")
+        void callBankAccountStatementToCSV() {
+            when(repository.findAll()).thenReturn(statements);
+
+            service.loadBankAccountsStatements();
+
+            verify(csvHelper, times(1)).bankAccountStatementToCSV(statements);
+        }
+
+        @Test
+        @DisplayName("call repository.findByOperationDate")
+        void callFindByOperationDate() {
+            service.loadBankAccountsStatements(dateFrom, dateTo);
+
+            verify(repository, times(1)).findByOperationDate(any(), any());
+        }
+
+        @Test
+        @DisplayName("call csvHelper.bankAccountStatementToCSV when given dates")
+        void callBankAccountStatementToCsvWhenGivenDates() {
+            when(repository.findByOperationDate(dateFrom, dateTo)).thenReturn(statements);
+
+            service.loadBankAccountsStatements(dateFrom, dateTo);
+
+            verify(csvHelper, times(1)).bankAccountStatementToCSV(statements);
         }
     }
 }
