@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import java.math.BigDecimal;
@@ -47,6 +48,33 @@ public class CSVHelper {
             return bankAccountStatementsList;
         } catch (IOException e) {
             throw new RuntimeException("failed to parse CSV file: " + e.getMessage());
+        }
+    }
+
+    public ByteArrayInputStream bankAccountStatementToCSV(List<BankAccountStatement> bankAccountStatementList) {
+        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
+
+        try (
+             ByteArrayOutputStream out = new ByteArrayOutputStream();
+             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)
+        ) {
+            for (BankAccountStatement bankAccountStatement : bankAccountStatementList) {
+                List<String> data = Arrays.asList(
+                        bankAccountStatement.getAccountNumber(),
+                        bankAccountStatement.getOperationDateTime().toString(),
+                        bankAccountStatement.getBeneficiary(),
+                        bankAccountStatement.getComment(),
+                        bankAccountStatement.getAmount().toString(),
+                        bankAccountStatement.getCurrency()
+                );
+
+                csvPrinter.printRecord(data);
+            }
+
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException("failed to import data to CSV file: " + e.getMessage());
         }
     }
 }
