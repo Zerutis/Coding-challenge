@@ -23,4 +23,13 @@ public interface BankAccountsStatementsRepository extends JpaRepository<BankAcco
             nativeQuery = true
     )
     List<BigDecimal> findAllByAccountNumber(String accountNumber);
+
+    @Query(
+            value = "SELECT amount FROM bank_account_statement " +
+                    "WHERE account_number = ?1 " +
+                    "AND operation_datetime > ?2 " +
+                    "AND operation_datetime < ?3",
+            nativeQuery = true
+    )
+    List<BigDecimal> findByAccountNumberAndDate(String accountNumber, String from, String to);
 }

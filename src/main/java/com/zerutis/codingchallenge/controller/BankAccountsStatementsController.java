@@ -59,14 +59,20 @@ public class BankAccountsStatementsController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please upload CSV file");
     }
 
-    @PostMapping("/account/{accountNumber}/balance")
+    @GetMapping("/account/{accountNumber}/balance")
     public ResponseEntity<BigDecimal> queryBalance(
             @PathVariable String accountNumber,
             @RequestParam(value = "from", required = false) String from,
             @RequestParam(value = "to", required = false) String to
     ) {
-        BigDecimal balance = service.queryAmountsOf(accountNumber);
+        BigDecimal balance;
 
+        if(from != null && to != null) {
+            balance = service.queryAmountOf(accountNumber, from, to);
+        }
+        else {
+            balance = service.queryAmountOf(accountNumber);
+        }
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(balance);
