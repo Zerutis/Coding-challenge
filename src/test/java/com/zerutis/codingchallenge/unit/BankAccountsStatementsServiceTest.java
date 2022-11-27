@@ -4,6 +4,7 @@ import com.zerutis.codingchallenge.helper.CSVHelper;
 import com.zerutis.codingchallenge.model.BankAccountStatement;
 import com.zerutis.codingchallenge.repository.BankAccountsStatementsRepository;
 import com.zerutis.codingchallenge.service.BankAccountsStatementsService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,13 +38,16 @@ public class BankAccountsStatementsServiceTest {
     @MockBean
     CSVHelper csvHelper;
 
+
+    final String accountNumber = "12345";
+    final BigDecimal amount = new BigDecimal(10);
     final BankAccountStatement statement = new BankAccountStatement(
-            "10000",
+            accountNumber,
             LocalDateTime.now(),
             "Inventi",
             "",
-            new BigDecimal(10),
-            "USD"
+            amount,
+            "EUR"
     );
     final List<BankAccountStatement> statements = new ArrayList(){{add(statement);}};
 
@@ -127,5 +131,52 @@ public class BankAccountsStatementsServiceTest {
 
             verify(csvHelper, times(1)).bankAccountStatementToCSV(statements);
         }
+    }
+
+    @Nested
+    @DisplayName("queryAmountOf should")
+    class queryAmountOf {
+
+        final String dateFrom = "2020-02-02";
+        final String dateTo = "2023-02-02";
+
+        @Test
+        @DisplayName("call repository.findAllByAccountNumber")
+        void callFindAllByAccountNumber() {
+            service.queryAmountOf(accountNumber);
+
+            verify(repository, times(1)).findAllByAccountNumber(accountNumber);
+        }
+
+        @Test
+        @DisplayName("return sum of statements amount")
+        void returnSumOfStatementsAmount() {
+            final List<BigDecimal> amountList = new ArrayList<>(){{add(amount);}};
+            when(repository.findAllByAccountNumber(accountNumber)).thenReturn(amountList);
+
+            final BigDecimal actual = service.queryAmountOf(accountNumber);
+
+            Assertions.assertEquals(amount, actual);
+        }
+
+        @Test
+        @DisplayName("call repository.findAllByAccountNumberAndDate with given dates")
+        void callFindAllByAccountNumberAndDate() {
+            service.queryAmountOf(accountNumber, dateFrom, dateTo);
+
+            verify(repository, times(1)).findByAccountNumberAndDate(accountNumber, dateFrom, dateTo);
+        }
+
+        @Test
+        @DisplayName("return sum of statements amount with given dates")
+        void returnSumOfStatementsAmountWithGivenDates() {
+            final List<BigDecimal> amountList = new ArrayList<>(){{add(amount);}};
+            when(repository.findByAccountNumberAndDate(accountNumber, dateFrom, dateTo)).thenReturn(amountList);
+
+            final BigDecimal actual = service.queryAmountOf(accountNumber, dateFrom, dateTo);
+
+            Assertions.assertEquals(amount, actual);
+        }
+
     }
 }
