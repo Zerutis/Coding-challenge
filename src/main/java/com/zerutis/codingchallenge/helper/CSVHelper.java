@@ -31,7 +31,6 @@ public class CSVHelper {
 
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
-
             csvRecords.forEach((record) -> {
                 BankAccountStatement statement = new BankAccountStatement(
                         record.get("AccountNumber"),

@@ -26,8 +26,6 @@ public class BankAccountsStatementsService {
     public void saveBankAccountsStatements(MultipartFile file) throws IOException {
         List statements = csvHelper.csvToBankAccountStatement(file.getInputStream());
 
-        statements.forEach(System.out::println);
-
         repository.saveAll(statements);
     }
 
@@ -52,15 +50,6 @@ public class BankAccountsStatementsService {
                 .stream()
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return balance;
-    }
-
-    private BigDecimal calculateBalance(List<BankAccountStatement> statements) {
-        BigDecimal balance = BigDecimal.ZERO;
-        statements.forEach((statement) -> {
-            balance.add(statement.getAmount());
-        });
 
         return balance;
     }
