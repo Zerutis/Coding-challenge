@@ -10,10 +10,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import static org.mockito.Mockito.*;
@@ -28,6 +32,7 @@ public class BankAccountsStatementsControllerTest {
 
     @MockBean
     BankAccountsStatementsService service;
+
 
     @Nested
     @DisplayName("uploadBankAccountStatements should")
@@ -85,11 +90,38 @@ public class BankAccountsStatementsControllerTest {
     @DisplayName("downloadBankAccountStatements should")
     class Download {
 
+        final String filename = "bank-accounts-statements.csv";
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(filename.getBytes());
+        final InputStreamResource inputStreamResource = new InputStreamResource(byteArrayInputStream);
+        final String dateFrom = "2020-02-02";
+        final String dateTo = "2023-02-02";
+
         @Test
-        @DisplayName("be not implemented")
-        void shouldBeNotImplemented() {
-            ResponseEntity expected = new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
-            ResponseEntity actual = controller.downloadBankAccountsStatements("", "");
+        @DisplayName("return httpStatus.OK")
+        void returnCsvFile() {
+            when(service.loadBankAccountsStatements()).thenReturn(byteArrayInputStream);
+
+            ResponseEntity expected = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                    .contentType(MediaType.parseMediaType("application/csv"))
+                    .body(inputStreamResource);
+            ResponseEntity actual = controller.downloadBankAccountsStatements(null, null);
+
+            Assertions.assertEquals(expected, actual);
+        }
+
+        @Test
+        @DisplayName("return httpStatus.OK when given dates")
+        void returnCsvFileWhenGivenDates() {
+            when(service.loadBankAccountsStatements(dateFrom, dateTo)).thenReturn(byteArrayInputStream);
+
+            ResponseEntity expected = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                    .contentType(MediaType.parseMediaType("application/csv"))
+                    .body(inputStreamResource);
+            ResponseEntity actual = controller.downloadBankAccountsStatements(dateFrom, dateTo);
 
             Assertions.assertEquals(expected, actual);
         }

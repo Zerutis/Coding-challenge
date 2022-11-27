@@ -35,8 +35,8 @@ public class BankAccountsStatementsController {
         }
         else {
             file = new InputStreamResource(service.loadBankAccountsStatements());
-
         }
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
