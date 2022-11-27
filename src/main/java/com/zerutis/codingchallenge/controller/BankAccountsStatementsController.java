@@ -1,9 +1,13 @@
 package com.zerutis.codingchallenge.controller;
 
+import com.zerutis.codingchallenge.helper.CSVHelper;
 import com.zerutis.codingchallenge.service.BankAccountsStatementsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/bank-accounts-statements")
@@ -24,8 +28,18 @@ public class BankAccountsStatementsController {
     }
 
     @PostMapping("/csv")
-    public ResponseEntity<String> uploadBankAccountsStatements() {
-        return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<String> uploadBankAccountsStatements(@RequestParam("file") MultipartFile file) {
+        if (file != null && CSVHelper.hasCSVFormat(file)) {
+            try {
+                service.saveBankAccountsStatements(file);
+
+                return ResponseEntity.status(HttpStatus.OK).body("");
+
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please upload CSV file");
     }
 
     @PostMapping("/account/{accountNumber}/balance")

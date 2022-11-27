@@ -1,9 +1,6 @@
 package com.zerutis.codingchallenge.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 public class BankAccountStatement {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
@@ -34,8 +32,7 @@ public class BankAccountStatement {
     @Column(name = "currency")
     private String currency;
 
-    public BankAccountStatement(Long id, String accountNumber, LocalDateTime operationDateTime, String beneficiary, String comment, BigDecimal amount, String currency) {
-        this.id = id;
+    public BankAccountStatement(String accountNumber, LocalDateTime operationDateTime, String beneficiary, String comment, BigDecimal amount, String currency) {
         this.accountNumber = accountNumber;
         this.operationDateTime = operationDateTime;
         this.beneficiary = beneficiary;
@@ -105,7 +102,8 @@ public class BankAccountStatement {
     @Override
     public String toString() {
         return "BankAccountStatement{" +
-                "accountNumber='" + accountNumber + '\'' +
+                "id=" + id +
+                ", accountNumber='" + accountNumber + '\'' +
                 ", operationDateTime=" + operationDateTime +
                 ", beneficiary='" + beneficiary + '\'' +
                 ", comment='" + comment + '\'' +
