@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -34,6 +36,10 @@ public class BankAccountsStatementsControllerTest {
     @MockBean
     BankAccountsStatementsService service;
 
+    Optional<String> givenDate() { return Optional.of(LocalDate.now().toString()); }
+
+    final Optional<String> dateFrom = givenDate();
+    final Optional<String> dateTo = givenDate();
 
     @Nested
     @DisplayName("uploadBankAccountStatements should")
@@ -94,20 +100,18 @@ public class BankAccountsStatementsControllerTest {
         final String filename = "bank-accounts-statements.csv";
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(filename.getBytes());
         final InputStreamResource inputStreamResource = new InputStreamResource(byteArrayInputStream);
-        final String dateFrom = "2020-02-02";
-        final String dateTo = "2023-02-02";
 
         @Test
         @DisplayName("return httpStatus.OK")
         void returnHttpStatusOK() {
-            when(service.loadBankAccountsStatements()).thenReturn(byteArrayInputStream);
+            when(service.loadBankAccountsStatements(Optional.empty(), Optional.empty())).thenReturn(byteArrayInputStream);
 
             ResponseEntity expected = ResponseEntity
                     .status(HttpStatus.OK)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                     .contentType(MediaType.parseMediaType("application/csv"))
                     .body(inputStreamResource);
-            ResponseEntity actual = controller.downloadBankAccountsStatements(null, null);
+            ResponseEntity actual = controller.downloadBankAccountsStatements(Optional.empty(), Optional.empty());
 
             Assertions.assertEquals(expected, actual);
         }
@@ -133,19 +137,17 @@ public class BankAccountsStatementsControllerTest {
     class AccountBalance {
 
         final String accountNumber = "10000";
-        final String dateFrom = "2020-02-02";
-        final String dateTo = "2023-02-02";
         final BigDecimal balance = new BigDecimal(10);
 
         @Test
         @DisplayName("return HttpStatus.OK with balance as 10")
         void returnHttpStatusOkWithBalance() {
-            when(service.calculateBalanceOf(accountNumber)).thenReturn(balance);
+            when(service.calculateBalanceOf(accountNumber, Optional.empty() , Optional.empty())).thenReturn(balance);
 
             ResponseEntity expected = ResponseEntity
                     .status(HttpStatus.OK)
                     .body(balance);
-            ResponseEntity actual = controller.calculateBalance(accountNumber, null, null);
+            ResponseEntity actual = controller.calculateBalance(accountNumber, Optional.empty(), Optional.empty());
 
             Assertions.assertEquals(expected, actual);
         }

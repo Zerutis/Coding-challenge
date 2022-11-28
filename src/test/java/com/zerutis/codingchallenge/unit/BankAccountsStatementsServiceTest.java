@@ -17,9 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -49,6 +51,11 @@ public class BankAccountsStatementsServiceTest {
             "EUR"
     );
     final List<BankAccountStatement> statements = new ArrayList(){{add(statement);}};
+
+    Optional<String> givenDate() { return Optional.of(LocalDate.now().toString()); }
+
+    final Optional<String> dateFrom = givenDate();
+    final Optional<String> dateTo = givenDate();
 
     @Nested
     @DisplayName("saveBankAccountsStatements should")
@@ -92,13 +99,10 @@ public class BankAccountsStatementsServiceTest {
     @DisplayName("loadBankAccountsStatements should")
     class loadBankAccountsStatements {
 
-        String dateFrom = "2020-02-02";
-        String dateTo = "2023-02-02";
-
         @Test
         @DisplayName("call repository.findAll")
         void callFindAll() {
-            service.loadBankAccountsStatements();
+            service.loadBankAccountsStatements(Optional.empty(), Optional.empty());
 
             verify(repository, times(1)).findAll();
         }
@@ -108,7 +112,7 @@ public class BankAccountsStatementsServiceTest {
         void callBankAccountStatementToCSV() {
             when(repository.findAll()).thenReturn(statements);
 
-            service.loadBankAccountsStatements();
+            service.loadBankAccountsStatements(Optional.empty(), Optional.empty());
 
             verify(csvHelper, times(1)).bankAccountStatementToCSV(statements);
         }
@@ -124,7 +128,7 @@ public class BankAccountsStatementsServiceTest {
         @Test
         @DisplayName("call csvHelper.bankAccountStatementToCSV when given dates")
         void callBankAccountStatementToCsvWhenGivenDates() {
-            when(repository.findByOperationDate(dateFrom, dateTo)).thenReturn(statements);
+            when(repository.findByOperationDate(any(), any())).thenReturn(statements);
 
             service.loadBankAccountsStatements(dateFrom, dateTo);
 
@@ -135,14 +139,10 @@ public class BankAccountsStatementsServiceTest {
     @Nested
     @DisplayName("calculateBalanceOf should")
     class calculateBalanceOf {
-
-        final String dateFrom = "2020-02-02";
-        final String dateTo = "2023-02-02";
-
         @Test
         @DisplayName("call repository.findAllByAccountNumber")
         void callFindAllByAccountNumber() {
-            service.calculateBalanceOf(accountNumber);
+            service.calculateBalanceOf(accountNumber, Optional.empty(), Optional.empty());
 
             verify(repository, times(1)).findAllByAccountNumber(accountNumber);
         }
@@ -157,7 +157,7 @@ public class BankAccountsStatementsServiceTest {
             }};
             when(repository.findAllByAccountNumber(accountNumber)).thenReturn(amountList);
 
-            final BigDecimal actual = service.calculateBalanceOf(accountNumber);
+            final BigDecimal actual = service.calculateBalanceOf(accountNumber,Optional.empty(), Optional.empty());
 
             Assertions.assertEquals(amount.multiply(new BigDecimal(3)), actual);
         }
@@ -167,7 +167,7 @@ public class BankAccountsStatementsServiceTest {
         void callFindAllByAccountNumberAndDate() {
             service.calculateBalanceOf(accountNumber, dateFrom, dateTo);
 
-            verify(repository, times(1)).findByAccountNumberAndDate(accountNumber, dateFrom, dateTo);
+            verify(repository, times(1)).findByAccountNumberAndDate(accountNumber, dateFrom.get(), dateTo.get());
         }
 
         @Test
@@ -178,7 +178,7 @@ public class BankAccountsStatementsServiceTest {
                 add(amount);
                 add(amount);
             }};
-            when(repository.findByAccountNumberAndDate(accountNumber, dateFrom, dateTo)).thenReturn(amountList);
+            when(repository.findByAccountNumberAndDate(any(), any(), any())).thenReturn(amountList);
 
             final BigDecimal actual = service.calculateBalanceOf(accountNumber, dateFrom, dateTo);
 

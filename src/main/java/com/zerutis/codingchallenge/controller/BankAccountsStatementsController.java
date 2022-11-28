@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/bank-accounts-statements")
@@ -22,18 +23,11 @@ public class BankAccountsStatementsController {
 
     @GetMapping("/csv")
     public ResponseEntity<Object> downloadBankAccountsStatements(
-            @RequestParam(value = "from", required = false) String from,
-            @RequestParam(value = "to", required = false) String to
+            @RequestParam(value = "from", required = false) Optional<String> from,
+            @RequestParam(value = "to", required = false) Optional<String> to
     ) {
         String filename = "bank-accounts-statements.csv";
-        InputStreamResource file;
-
-        if(from != null && to != null) {
-            file = new InputStreamResource(service.loadBankAccountsStatements(from, to));
-        }
-        else {
-            file = new InputStreamResource(service.loadBankAccountsStatements());
-        }
+        InputStreamResource file = new InputStreamResource(service.loadBankAccountsStatements(from, to));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -54,23 +48,19 @@ public class BankAccountsStatementsController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please upload CSV file");
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("Please upload CSV file");
     }
 
     @GetMapping("/account/{accountNumber}/balance")
     public ResponseEntity<BigDecimal> calculateBalance(
             @PathVariable String accountNumber,
-            @RequestParam(value = "from", required = false) String from,
-            @RequestParam(value = "to", required = false) String to
+            @RequestParam(value = "from", required = false) Optional<String> from,
+            @RequestParam(value = "to", required = false) Optional<String> to
     ) {
-        BigDecimal balance;
+        BigDecimal balance = service.calculateBalanceOf(accountNumber, from, to);
 
-        if(from != null && to != null) {
-            balance = service.calculateBalanceOf(accountNumber, from, to);
-        }
-        else {
-            balance = service.calculateBalanceOf(accountNumber);
-        }
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(balance);

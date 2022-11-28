@@ -1,6 +1,7 @@
 package com.zerutis.codingchallenge.service;
 
 import com.zerutis.codingchallenge.helper.CSVHelper;
+import com.zerutis.codingchallenge.helper.DateHelper;
 import com.zerutis.codingchallenge.model.BankAccountStatement;
 import com.zerutis.codingchallenge.repository.BankAccountsStatementsRepository;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -21,33 +23,38 @@ public class BankAccountsStatementsService {
     final CSVHelper csvHelper;
 
     public void saveBankAccountsStatements(MultipartFile file) throws IOException {
-        List statements = csvHelper.csvToBankAccountStatement(file.getInputStream());
+        List<BankAccountStatement> statements = csvHelper.csvToBankAccountStatement(file.getInputStream());
 
         repository.saveAll(statements);
     }
 
-    public ByteArrayInputStream loadBankAccountsStatements() {
-        List<BankAccountStatement> bankAccountStatementList = repository.findAll();
+    public ByteArrayInputStream loadBankAccountsStatements(Optional<String> from, Optional<String> to) {
+        List<BankAccountStatement> bankAccountStatementList;
+
+        if(from.isPresent() && to.isPresent()) {
+            String dateFrom = from.filter(DateHelper::isValidDate).orElseThrow();
+            String dateTo = to.filter(DateHelper::isValidDate).orElseThrow();
+
+            bankAccountStatementList = repository.findByOperationDate(dateFrom, dateTo);
+        } else {
+            bankAccountStatementList = repository.findAll();
+        }
 
         ByteArrayInputStream byteArrayInputStream = csvHelper.bankAccountStatementToCSV(bankAccountStatementList);
         return byteArrayInputStream;
     }
 
-    public ByteArrayInputStream loadBankAccountsStatements(String from, String to) {
-        List<BankAccountStatement> bankAccountStatementList = repository.findByOperationDate(from, to);
+    public BigDecimal calculateBalanceOf(String accountNumber, Optional<String> from, Optional<String> to) {
+        List<BigDecimal> amountList;
 
-        ByteArrayInputStream byteArrayInputStream = csvHelper.bankAccountStatementToCSV(bankAccountStatementList);
-        return byteArrayInputStream;
-    }
+        if(from.isPresent() && to.isPresent()) {
+            String dateFrom = from.filter(DateHelper::isValidDate).orElseThrow();
+            String dateTo = to.filter(DateHelper::isValidDate).orElseThrow();
 
-    public BigDecimal calculateBalanceOf(String accountNumber) {
-        List<BigDecimal> amountList = repository.findAllByAccountNumber(accountNumber);
-
-        return calculateBalance(amountList);
-    }
-
-    public BigDecimal calculateBalanceOf(String accountNumber, String from, String to) {
-        List<BigDecimal> amountList = repository.findByAccountNumberAndDate(accountNumber, from, to);
+            amountList = repository.findByAccountNumberAndDate(accountNumber, dateFrom, dateTo);
+        } else {
+           amountList = repository.findAllByAccountNumber(accountNumber);
+        }
 
         return calculateBalance(amountList);
     }
