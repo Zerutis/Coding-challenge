@@ -38,7 +38,6 @@ public class BankAccountsStatementsServiceTest {
     @MockBean
     CSVHelper csvHelper;
 
-
     final String accountNumber = "12345";
     final BigDecimal amount = new BigDecimal(10);
     final BankAccountStatement statement = new BankAccountStatement(
@@ -151,12 +150,16 @@ public class BankAccountsStatementsServiceTest {
         @Test
         @DisplayName("return sum of statements amount")
         void returnSumOfStatementsAmount() {
-            final List<BigDecimal> amountList = new ArrayList<>(){{add(amount);}};
+            final List<BigDecimal> amountList = new ArrayList<>(){{
+                add(amount);
+                add(amount);
+                add(amount);
+            }};
             when(repository.findAllByAccountNumber(accountNumber)).thenReturn(amountList);
 
             final BigDecimal actual = service.calculateBalanceOf(accountNumber);
 
-            Assertions.assertEquals(amount, actual);
+            Assertions.assertEquals(amount.multiply(new BigDecimal(3)), actual);
         }
 
         @Test
@@ -170,12 +173,16 @@ public class BankAccountsStatementsServiceTest {
         @Test
         @DisplayName("return sum of statements amount with given dates")
         void returnSumOfStatementsAmountWithGivenDates() {
-            final List<BigDecimal> amountList = new ArrayList<>(){{add(amount);}};
+            final List<BigDecimal> amountList = new ArrayList<>(){{
+                add(amount);
+                add(amount);
+                add(amount);
+            }};
             when(repository.findByAccountNumberAndDate(accountNumber, dateFrom, dateTo)).thenReturn(amountList);
 
             final BigDecimal actual = service.calculateBalanceOf(accountNumber, dateFrom, dateTo);
 
-            Assertions.assertEquals(amount, actual);
+            Assertions.assertEquals(amount.multiply(new BigDecimal(3)), actual);
         }
 
     }
