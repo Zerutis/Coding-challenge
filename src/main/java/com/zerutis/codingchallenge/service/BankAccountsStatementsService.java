@@ -1,5 +1,6 @@
 package com.zerutis.codingchallenge.service;
 
+import com.zerutis.codingchallenge.exception.InvalidDateException;
 import com.zerutis.codingchallenge.helper.CSVHelper;
 import com.zerutis.codingchallenge.helper.DateHelper;
 import com.zerutis.codingchallenge.model.BankAccountStatement;
@@ -32,10 +33,18 @@ public class BankAccountsStatementsService {
         List<BankAccountStatement> bankAccountStatementList;
 
         if(from.isPresent() && to.isPresent()) {
-            String dateFrom = from.filter(DateHelper::isValidDate).orElseThrow();
-            String dateTo = to.filter(DateHelper::isValidDate).orElseThrow();
+            String dateFrom = from.filter(DateHelper::isValidDate).get();
+            String dateTo = to.filter(DateHelper::isValidDate).get();
 
             bankAccountStatementList = repository.findByOperationDate(dateFrom, dateTo);
+        } else if (from.isPresent()) {
+            String dateFrom = from.filter(DateHelper::isValidDate).get();
+
+            bankAccountStatementList = repository.findByOperationDateFrom(dateFrom);
+        } else if (to.isPresent()) {
+            String dateTo = to.filter(DateHelper::isValidDate).get();
+
+            bankAccountStatementList = repository.findByOperationDateTo(dateTo);
         } else {
             bankAccountStatementList = repository.findAll();
         }
@@ -48,10 +57,18 @@ public class BankAccountsStatementsService {
         List<BigDecimal> amountList;
 
         if(from.isPresent() && to.isPresent()) {
-            String dateFrom = from.filter(DateHelper::isValidDate).orElseThrow();
-            String dateTo = to.filter(DateHelper::isValidDate).orElseThrow();
+            String dateFrom = from.filter(DateHelper::isValidDate).get();
+            String dateTo = to.filter(DateHelper::isValidDate).get();
 
             amountList = repository.findByAccountNumberAndDate(accountNumber, dateFrom, dateTo);
+        } else if (from.isPresent()) {
+            String dateFrom = from.filter(DateHelper::isValidDate).get();
+
+            amountList = repository.findByAccountNumberAndDateFrom(accountNumber, dateFrom);
+        } else if (to.isPresent()) {
+            String dateTo = to.filter(DateHelper::isValidDate).get();
+
+            amountList = repository.findByAccountNumberAndDateFrom(accountNumber, dateTo);
         } else {
            amountList = repository.findAllByAccountNumber(accountNumber);
         }

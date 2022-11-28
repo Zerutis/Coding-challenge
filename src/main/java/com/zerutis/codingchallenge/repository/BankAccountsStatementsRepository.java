@@ -17,6 +17,18 @@ public interface BankAccountsStatementsRepository extends JpaRepository<BankAcco
     )
     List<BankAccountStatement> findByOperationDate(String from, String to);
 
+    @Query(
+            value = "SELECT * FROM bank_account_statement WHERE operation_datetime > ?1",
+            nativeQuery = true
+    )
+    List<BankAccountStatement> findByOperationDateFrom(String from);
+
+    @Query(
+            value = "SELECT * FROM bank_account_statement WHERE operation_datetime < ?1",
+            nativeQuery = true
+    )
+    List<BankAccountStatement> findByOperationDateTo(String to);
+
 
     @Query(
             value = "SELECT amount FROM bank_account_statement WHERE account_number = ?1",
@@ -32,4 +44,16 @@ public interface BankAccountsStatementsRepository extends JpaRepository<BankAcco
             nativeQuery = true
     )
     List<BigDecimal> findByAccountNumberAndDate(String accountNumber, String from, String to);
+
+    @Query(
+            value = "SELECT amount FROM bank_account_statement WHERE account_number = ?1 AND operation_datetime > ?2",
+            nativeQuery = true
+    )
+    List<BigDecimal> findByAccountNumberAndDateFrom(String accountNumber, String from);
+
+    @Query(
+            value = "SELECT amount FROM bank_account_statement WHERE account_number = ?1 AND operation_datetime < ?2",
+            nativeQuery = true
+    )
+    List<BigDecimal> findByAccountNumberAndDateTo(String accountNumber, String to);
 }

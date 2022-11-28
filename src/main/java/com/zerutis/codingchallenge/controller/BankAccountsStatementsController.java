@@ -1,5 +1,6 @@
 package com.zerutis.codingchallenge.controller;
 
+import com.zerutis.codingchallenge.exception.InvalidDateException;
 import com.zerutis.codingchallenge.helper.CSVHelper;
 import com.zerutis.codingchallenge.service.BankAccountsStatementsService;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class BankAccountsStatementsController {
     public ResponseEntity<Object> downloadBankAccountsStatements(
             @RequestParam(value = "from", required = false) Optional<String> from,
             @RequestParam(value = "to", required = false) Optional<String> to
-    ) {
+    ) throws InvalidDateException {
         String filename = "bank-accounts-statements.csv";
         InputStreamResource file = new InputStreamResource(service.loadBankAccountsStatements(from, to));
 
@@ -58,7 +59,7 @@ public class BankAccountsStatementsController {
             @PathVariable String accountNumber,
             @RequestParam(value = "from", required = false) Optional<String> from,
             @RequestParam(value = "to", required = false) Optional<String> to
-    ) {
+    ) throws InvalidDateException {
         BigDecimal balance = service.calculateBalanceOf(accountNumber, from, to);
 
         return ResponseEntity
