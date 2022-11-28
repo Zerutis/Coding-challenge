@@ -2,6 +2,7 @@ package com.zerutis.codingchallenge.controller;
 
 import com.zerutis.codingchallenge.helper.CSVHelper;
 import com.zerutis.codingchallenge.service.BankAccountsStatementsService;
+import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,10 @@ import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/v1/bank-accounts-statements")
+@AllArgsConstructor
 public class BankAccountsStatementsController {
 
     final BankAccountsStatementsService service;
-
-    public BankAccountsStatementsController(BankAccountsStatementsService service) {
-        this.service = service;
-    }
 
     @GetMapping("/csv")
     public ResponseEntity<Object> downloadBankAccountsStatements(

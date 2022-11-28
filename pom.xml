@@ -44,6 +44,12 @@
             <artifactId>commons-csv</artifactId>
             <version>1.9.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -52,7 +58,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <finalName>coding-challenge-webapp</finalName>
+                    <finalName>coding-challenge-app</finalName>
                 </configuration>
             </plugin>
         </plugins>
