@@ -1,11 +1,22 @@
-# Coding-challenge
+# Coding-Challenge-API
+Small API that manages bank account statements storage and bank account balance calculations. 
 
-There is no validation, exceptions class.
+## Getting started TODO
 
-Couldn't figure out why can't connect application with mysql in docker container.
+## Endpoints
 
-My steps (there been various combinations - latest is showed):
-* `docker run -p 4406:3306 --name mysql-standalone -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=coding_challenge -d mysql` 
-* `maven install`
-* `docker build -t coding-challenge-webapp .` from project root
-* `docker run -p 9090:8080 --name coding-challenge-webapp --link mysql-standalone:mysql -d coding-challenge-webapp`
+Base URL `http://coding-challenge-api:8080/v1/bank-accounts-statements`
+
+### GET retrieves bank account statements in _optional_ time range (Download CSV)
+Example `http://coding-challenge-api:8080/v1/bank-accounts-statements/csv?from=<date>&to=<date>`
+
+### POST one or many bank account statements (Upload CSV)
+Example `http://coding-challenge-api:8080/v1/bank-accounts-statements/csv`
+
+### GET calculate balance of selected bank account in _optional_ time range 
+Example `http://coding-challenge-api:8080/v1/bank-accounts-statements/account/<account_number>/balance?from=<date>&to=<date>`
+
+## Edge-cases TODO
+
+## Unfulfilled TODO
+
