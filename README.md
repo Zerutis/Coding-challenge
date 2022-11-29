@@ -8,6 +8,8 @@ Small API that manages bank account statements storage and bank account balance 
 - Run `docker run -d -t --name <any-name> -p 9090:9090 coding-challenge-app`
 - Try sending request to endpoints
 
+There is prepared dataset in `src/main/resources/inputFile.csv` which can be used to fill the database.
+
 To connect to h2 database, go to `http://localhost:9090/h2-console`, `Password`:`root`
 <img src="images/h2-database.png">
 ## Endpoints
